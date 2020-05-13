@@ -8,7 +8,7 @@ export default class Footer extends Component {
                          <div className="row">
                               <div className="col-lg-4 col-md-6">
                                    <div className="footer-section">
-                                        <a className="logo" href="#"><img src="images/logo.png" alt="Logo Image" /></a>
+                                        <a className="logo" href="#"><img src="/images/logo.png" alt="Logo Image" /></a>
                                         <p className="copyright">Bona @ 2017. All rights reserved.</p>
                                         <p className="copyright">Designed by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
                                         <ul className="icons">

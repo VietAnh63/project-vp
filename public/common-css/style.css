@@ -1,0 +1,6 @@
+.slider {
+     height: 300px;
+     width: 100%;
+     background-image: url(./../images/slider-1.jpg);
+     background-size: cover;
+ }
