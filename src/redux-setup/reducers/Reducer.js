@@ -7,6 +7,7 @@ import Comment from './Comment'
 import dataCmt from './dataCmt'
 import countCmt from './CountCmt'
 import PushComment from './PushComment'
+import addCmt from './addCmt'
 var reducer = combineReducers({
      dataAPI : DataAPI,
      like: Like,
@@ -15,7 +16,8 @@ var reducer = combineReducers({
      comment: Comment,
      datacmt: dataCmt,
      count: countCmt,
-     push: PushComment
+     push: PushComment,
+     addCmt: addCmt
 })
 
 export default reducer

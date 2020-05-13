@@ -2,6 +2,7 @@ import React from 'react'
 import loadData from './../ConnectAPI'
 import { connect } from 'react-redux'
 import loadCmt from './../ConnectAPIcmt'
+import { v4 as uuidv4 } from 'uuid'
 class Detail extends React.Component {
      constructor(props) {
           super(props)
@@ -13,9 +14,7 @@ class Detail extends React.Component {
                name: "",
                email: "",
                message: "",
-               comments: []
-
-
+               addCmt: []
           }
      }
 
@@ -24,13 +23,17 @@ class Detail extends React.Component {
                this.props.run1(res.data)
                this.props.getCount(this.mapCmt.length)
                this.mapCmt()
-               this.props.pushComment(this.mapCmt())
+               //this.props.pushComment(this.mapCmt())
+               this.props.addCmt(this.props.addCmt)
                this.setState({
                     dataCmt: this.props.cmt,
                     count: this.props.count,
                     push: this.props.push,
                     //comments: this.props.cmt
                })
+               
+               console.log("lo", res.data);
+               console.log("aa", this.state.dataCmt)
           })
 
           loadData().then((res) => {
@@ -39,6 +42,34 @@ class Detail extends React.Component {
                     dataAPI: this.props.data,
                })
           })
+
+
+     }
+
+     componentDidUpdate(){
+          this.displayfinalItem()
+     }
+
+     displayfinalItem = (i) => {
+          var fli = []
+          if(i === parseInt(this.props.match.params.id)){
+               fli[i].push( <div className="comment">
+               <div className="post-info">
+                    <div className="middle-area">
+                         <a className="name" href="#"><b>{this.state.addCmt['name']}</b></a>
+                         <h6 className="date">on Sep 29, 2017 at 9:48 am</h6>
+                    </div>
+                    <div className="right-area">
+                         <h5 className="reply-btn"><a href="#"><b>REPLY</b></a></h5>
+                    </div>
+               </div>
+               <p>{this.state.addCmt['body']}</p>
+          </div>)
+          this.addCmt(fli[i])
+          }
+
+          return fli
+
 
      }
 
@@ -52,55 +83,43 @@ class Detail extends React.Component {
           var postId = parseInt(this.props.match.params.id, 10)
 
           //this.onChange(e)
-
-
-          // this.state.dataCmt.push(
-          //      {
-          //           "postId": 5,
-          //           "id": 1001,
-          //           "name": "aliquid rerum mollitia qui a consectetur eum sed",
-          //           "email": "Noemie@marques.me",
-          //           "body": "deleniti aut sed molestias explicabo\ncommodi odio ratione nesciunt\nvoluptate doloremque est\nnam autem error delectus"
-          //      }
-          // )
-
+          var add = {
+               "postId": postId,
+               "id": uuidv4(),
+               "name": this.state.name,
+               "email": this.state.email,
+               "body": this.state.message
+          }
           this.setState({
                dataCmt: [
-                    ...this.state.dataCmt,
-                    {
-                         "postId": postId,
-                         "id": 2000,
-                         // "name": this.state.name,
-                         // "email": this.state.email,
-                         // "body": this.state.message
-                         "name": "aliquid rerum mollitia qui a consectetur eum sed",
-                         "email": "Noemie@marques.me",
-                         "body": "deleniti aut sed molestias explicabo\ncommodi odio ratione nesciunt\nvoluptate doloremque est\nnam autem"
-                    }
+                     ...this.state.dataCmt, add
                ]
+               //dataCmt: this.state.dataCmt.push(add)
           }, () => {
-
                console.log("dataCmt: ", this.state.dataCmt)
+               //console.log('501:', this.state.dataCmt[this.state.dataCmt.length-1])
+               this.props.run1(this.state.dataCmt)
+               //this.props.pushComment(this.mapCmt())
+               this.setState({
+                    addCmt: add
+               }, () => {
+                    console.log("push", this.state.addCmt);
+                    this.props.addCmt(this.state.addCmt)
+               })
           })
-          //      <div className="comment">
-          //           <div className="post-info">
-          //                <div className="middle-area">
-          //                     <a className="name" href="#"><b>{this.state.push[i].email}</b></a>
-          //                     <h6 className="date">on Sep 29, 2017 at 9:48 am</h6>
-          //                </div>
-          //                <div className="right-area">
-          //                     <h5 className="reply-btn"><a href="#"><b>REPLY</b></a></h5>
-          //                </div>
+          //this.props.cmt = this.state.dataCmt
+          //      return <div className="comment">
+          //      <div className="post-info">
+          //           <div className="middle-area">
+          //                <a className="name" href="#"><b>{this.state.addCmt['name']}</b></a>
+          //                <h6 className="date">on Sep 29, 2017 at 9:48 am</h6>
           //           </div>
-          //           <p>{this.state.push[i].message}</p>
+          //           <div className="right-area">
+          //                <h5 className="reply-btn"><a href="#"><b>REPLY</b></a></h5>
+          //           </div>
           //      </div>
-          // )
-          // this.setState({
-          //      push: this.state.push
-          // })
-          //this.mapCmt().push(this.state.push[i])
-          console.log("push", this.props.push[i]);
-
+          //      <p>{this.state.addCmt['body']}</p>
+          // </div>
 
 
      }
@@ -133,8 +152,9 @@ class Detail extends React.Component {
                          )
                }
                //console.log("aa", arrCmt[i])
-               return arrCmt[i]
+
           }
+          return arrCmt
      }
      onChange = (e) => {
           let nam = e.target.name
@@ -288,13 +308,13 @@ class Detail extends React.Component {
                                                   <form method="post">
                                                        <div className="row">
                                                             <div className="col-sm-6">
-                                                                 <input type="text"  aria-required="true" name="name" className="form-control" placeholder="Enter your name" aria-invalid="true" required />
+                                                                 <input type="text" aria-required="true" onChange={(e) => this.onChange(e)} name="name" className="form-control" placeholder="Enter your name" aria-invalid="true" required />
                                                             </div>
                                                             <div className="col-sm-6">
-                                                                 <input type="email" aria-required="true" name="email"  className="form-control" placeholder="Enter your email" aria-invalid="true" required />
+                                                                 <input type="email" aria-required="true" onChange={(e) => this.onChange(e)} name="email" className="form-control" placeholder="Enter your email" aria-invalid="true" required />
                                                             </div>
                                                             <div className="col-sm-12">
-                                                                 <textarea name="message"  rows={2} className="text-area-messge form-control" placeholder="Enter your comment" aria-required="true" aria-invalid="false" defaultValue={""} />
+                                                                 <textarea name="message" onChange={(e) => this.onChange(e)} rows={2} className="text-area-messge form-control" placeholder="Enter your comment" aria-required="true" aria-invalid="false" defaultValue={""} />
                                                             </div>
                                                             <div className="col-sm-12">
                                                                  <button onClick={(e) => this.pushItem(e, i)} className="submit-btn" type="submit" id="form-submit"><b>POST COMMENT</b></button>
@@ -304,8 +324,10 @@ class Detail extends React.Component {
                                              </div>
                                              <h4><b>COMMENT:{this.state.count[i]}</b></h4>
                                              <div className="commnets-area" id="abc">
-                                                  {this.mapCmt()}
-                                                  {/* {this.state.push[i]} */}
+                                                  {this.mapCmt()[i]}
+                                                  {/* {this.state.push[i]}  */}
+                                                  {/* {this.mapCmt()[i][this.mapCmt()[i].length-1]} */}
+                                                  {this.state.addCmt[i]}
                                              </div>
 
                                         </div><b>
@@ -325,15 +347,13 @@ class Detail extends React.Component {
      }
 }
 
-
-
-
 const mapStateToProps = (state) => {
      return {
           data: state.dataAPI,
           cmt: state.datacmt,
           count: state.count,
-          push: state.push
+          push: state.push,
+          addCmt: state.addCmt
      }
 }
 
@@ -354,6 +374,10 @@ const mapDispatchToProps = (dispatch) => {
           }),
           pushComment: (data) => ({
                type: "INCREASE-COMMENT",
+               payload: data
+          }),
+          addCmt: (data) => ({
+               type: "ADD-CMT",
                payload: data
           })
      }
